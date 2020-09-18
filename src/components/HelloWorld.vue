@@ -12,13 +12,13 @@
     <div class="drag-box fl">
       <h2>待办事项</h2>
       <draggable class="dd" element="ul" v-model="listdata" group="{name:'people'}" animation='200'>
-        <li v-for="item in listdata" :key="item.id">{{item.name}}</li>
+        <li v-for="item in listdata" :key="item.id">{{item.noacc}}</li>
       </draggable>
     </div>
     <div class="drag-box fr">
       <h2>完成事项</h2>
       <draggable class="dd" element="ul" v-model="listdata2" group="{name:'people'}" animation='200'>
-        <li v-for="item in listdata2" :key="item.id">{{item.name}}</li>
+        <li v-for="item in listdata2" :key="item.id">{{item.noacc}}</li>
       </draggable>
     </div>
     <!-- <draggable class="dd" element="ul" v-model="listdata" group="people">
@@ -53,42 +53,27 @@ export default {
         noacc:''
       },
       listdata:[],
-      listdata2:[
-        {
-          id: 1,
-          name: '叶落森1'
-        },
-        {
-          id: 2,
-          name: '叶落森2'
-        },
-        {
-          id: 3,
-          name: '叶落森3'
-        },
-        {
-          id: 4,
-          name: '叶落森4'
-        },
-        {
-          id: 5,
-          name: '叶落森5'
-        }
-      ]
+      listdata2:[]
     }
   },
   methods:{
     btn(){
       if(this.noacclist.noacc.length > 0){
         this.$http.post('/add',this.noacclist).then(res=>{
-          console.log(res)
+          // console.log(res)
         })
       }
+      this.$http.get('/noacclist').then(res=>{
+      this.listdata = res.data
+      this.noacclist.noacc = ''
+      // console.log(res.data)
+    })
     }
-  },
+},
   mounted(){
     this.$http.get('/noacclist').then(res=>{
-      console.log(res)
+      this.listdata = res.data
+      // console.log(res.data)
     })
   }
 }

@@ -58,11 +58,14 @@ router.post('/add',async(ctx)=>{
 });
 
 router.get('/noacclist',async(ctx)=>{
-    const newNoacc = new Noacc({
-        noacc:ctx.request.body.noacc
-    });
-    ctx.body = newNoacc;
-    console.log(ctx.body);
+    const findResult = await Noacc.find({noaccs:ctx.request.body.noacc});
+    // console.log(findResult)
+    ctx.body = findResult
+});
+
+router.delete('/del/:id',async(ctx)=>{
+    const findResult = await Noacc.findByIdAndDelete({noaccs:ctx.request.body.id});
+    console.log(findResult)
 })
 
 //配置路由地址
