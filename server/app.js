@@ -63,9 +63,8 @@ router.get('/noacclist',async(ctx)=>{
     ctx.body = findResult
 });
 
-router.delete('/del/:id',async(ctx)=>{
-    const findResult = await Noacc.findByIdAndDelete({noaccs:ctx.request.body.id});
-    console.log(findResult)
+router.delete('/del',async(ctx)=>{
+    await Noacc.findOneAndDelete({noaccs:ctx.request.body.noacc});
 })
 
 //配置路由地址

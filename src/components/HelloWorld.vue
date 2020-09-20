@@ -12,7 +12,7 @@
     <div class="drag-box fl">
       <h2>待办事项</h2>
       <draggable class="dd" element="ul" v-model="listdata" group="{name:'people'}" animation='200'>
-        <li v-for="item in listdata" :key="item.id">{{item.noacc}}</li>
+        <li v-for="item in listdata" :key="item._id" :id="item._id">{{item.noacc}}<img @click="del" class="close" src="../assets/images/close.svg"/></li>
       </draggable>
     </div>
     <div class="drag-box fr">
@@ -66,6 +66,17 @@ export default {
       this.$http.get('/noacclist').then(res=>{
       this.listdata = res.data
       this.noacclist.noacc = ''
+      // console.log(res.data)
+    })
+    },
+    del(){
+      var id = event.path[1].id
+      // console.log(id)
+      this.$http.delete('/del',{id}).then(res=>{
+        
+      })
+      this.$http.get('/noacclist').then(res=>{
+      this.listdata = res.data
       // console.log(res.data)
     })
     }
@@ -154,8 +165,13 @@ export default {
       border-bottom: 1px solid #333;
       padding:5px;
       font-size: 18px;
+      padding-right: 20px;
     }
     .body .dd li:last-child{
       border-bottom: none;
+    }
+    img.close{
+      float: right;
+      display: inline-block;
     }
 </style>
