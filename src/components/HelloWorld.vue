@@ -12,13 +12,13 @@
     <div class="drag-box fl">
       <h2>待办事项</h2>
       <draggable class="dd" element="ul" v-model="listdata" group="{name:'people'}" animation='200'>
-        <li v-for="item in listdata" :key="item._id" :id="item._id">{{item.noacc}}<img @click="del" class="close" src="../assets/images/close.svg"/></li>
+        <li v-for="item in listdata" :key="item._id" :id="item._id">{{item.noacc}}<img @click="ok" class="ok" src="../assets/images/完成.svg"/><img @click="del" class="close" src="../assets/images/close.svg"/></li>
       </draggable>
     </div>
     <div class="drag-box fr">
       <h2>完成事项</h2>
       <draggable class="dd" element="ul" v-model="listdata2" group="{name:'people'}" animation='200'>
-        <li v-for="item in listdata2" :key="item.id">{{item.noacc}}</li>
+        <li v-for="item in listdata2" :key="item._id">{{item.acc}}</li>
       </draggable>
     </div>
     <!-- <draggable class="dd" element="ul" v-model="listdata" group="people">
@@ -72,12 +72,33 @@ export default {
     del(){
       var id = event.path[1].id
       // console.log(id)
-      this.$http.delete('/del',{id}).then(res=>{
+      this.$http.post('/del',{id:id}).then(res=>{
+        // console.log('ddds')
         
       })
       this.$http.get('/noacclist').then(res=>{
       this.listdata = res.data
       // console.log(res.data)
+    })
+    },
+    ok(){
+      var txt = event.path[1].innerText
+      var id = event.path[1].id
+      console.log(txt)
+      this.$http.post('/ok',{data:txt}).then(res=>{
+        console.log('ok')
+      })
+      // console.log(id)
+      this.$http.post('/del',{id:id}).then(res=>{
+        // console.log('ddds')
+      })
+      this.$http.get('/noacclist').then(res=>{
+      this.listdata = res.data
+      // console.log(res.data)
+    })
+    this.$http.get('/acclist').then(res=>{
+      this.listdata2 = res.data
+      // console.log(res)
     })
     }
 },
@@ -85,6 +106,10 @@ export default {
     this.$http.get('/noacclist').then(res=>{
       this.listdata = res.data
       // console.log(res.data)
+    }),
+    this.$http.get('/acclist').then(res=>{
+      this.listdata2 = res.data
+      // console.log(res)
     })
   }
 }
@@ -172,6 +197,9 @@ export default {
     }
     img.close{
       float: right;
-      display: inline-block;
+      margin-right: 20px;
+    }
+    img.ok{
+      float: right;
     }
 </style>

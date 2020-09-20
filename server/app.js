@@ -1,18 +1,21 @@
 const Koa = require('koa');
 const Router = require('koa-router');
 const mongoose = require('mongoose');
-const bodyParser = require('koa-bodyparser');
+const koaBody = require('koa-body');
 const cors = require('koa2-cors');
 
-//引入Bbs
+//引入model
 const Noacc = require('../server/models/Noacc');
+const Acc = require('../server/models/Acc')
 
 //实例化koa
 const app = new Koa();
 const router = new Router();
 
 
-app.use(bodyParser());
+app.use(koaBody({
+    strict:false,//设为false
+}));
 app.use(cors());
 
 
@@ -63,8 +66,57 @@ router.get('/noacclist',async(ctx)=>{
     ctx.body = findResult
 });
 
-router.delete('/del',async(ctx)=>{
-    await Noacc.findOneAndDelete({noaccs:ctx.request.body.noacc});
+router.post('/del',async(ctx)=>{
+    const id = (ctx.request.body)
+    // console.log(id)
+    const find = await Noacc.findByIdAndDelete({_id:ctx.request.body.id});
+    // console.log(find)
+    ctx.body = {
+        msg:'ddd'
+    }
+});
+
+router.post('/acc',async (ctx)=>{
+    const newAcc = new Acc({
+        acc:ctx.request.body.acc
+    });
+    // console.log(newAcc)
+
+    // 存储到数据库
+    await newAcc.save().then(acc=>{
+        ctx.body = acc;
+    }).catch((err)=>{
+        console.log(err)
+    });
+
+    //返回json数据
+    ctx.body = newAcc;
+});
+
+router.get('/acclist',async(ctx)=>{
+    const findResult = await Acc.find({accs:ctx.request.body.acc});
+    ctx.body = findResult
+});
+
+router.post('/ok',async(ctx)=>{
+    // console.log(ctx.request.body.data)
+    const txt = ctx.request.body.data
+    const findResult = await Acc.find({accs:ctx.request.body.acc})
+    console.log(findResult)
+    const newAcc = new Acc({
+        acc:txt
+    });
+    // console.log(newAcc)
+
+    // 存储到数据库
+    await newAcc.save().then(acc=>{
+        ctx.body = acc;
+    }).catch((err)=>{
+        console.log(err)
+    });
+
+    //返回json数据
+    ctx.body = newAcc;
 })
 
 //配置路由地址
