@@ -17,7 +17,7 @@
     </div>
     <div class="drag-box fr">
       <h2>完成事项</h2>
-      <draggable class="dd" element="ul" v-model="listdata2" group="{name:'people'}" animation='200'>
+      <draggable class="dd" element="ul" v-model="listdata2" group="{name:'people'}" animation='200' @change="toChange">
         <li v-for="item in listdata2" :key="item._id">{{item.acc}}</li>
       </draggable>
     </div>
@@ -89,6 +89,26 @@ export default {
         console.log('ok')
       })
       // console.log(id)
+      this.$http.post('/del',{id:id}).then(res=>{
+        // console.log('ddds')
+      })
+      this.$http.get('/noacclist').then(res=>{
+      this.listdata = res.data
+      // console.log(res.data)
+    })
+    this.$http.get('/acclist').then(res=>{
+      this.listdata2 = res.data
+      // console.log(res)
+    })
+    },
+    toChange(event){
+      console.log(event)
+      var txt = event.added.element.noacc
+      var id = event.added.element._id
+      console.log(txt)
+      this.$http.post('/ok',{data:txt}).then(res=>{
+        console.log('ok')
+      })
       this.$http.post('/del',{id:id}).then(res=>{
         // console.log('ddds')
       })
