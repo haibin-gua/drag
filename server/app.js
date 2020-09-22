@@ -119,6 +119,13 @@ router.post('/ok',async(ctx)=>{
     ctx.body = newAcc;
 })
 
+router.get('/remove',async(ctx)=>{
+    await Acc.remove({accs:ctx.request.body.acc})
+    ctx.body = {
+        msg:'ok'
+    }
+})
+
 //配置路由地址
 // router.use('/api/add',Noacc);
 

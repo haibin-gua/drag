@@ -5,8 +5,10 @@ import App from './App'
 import router from './router'
 import './assets/border.css'
 import './assets/reset.css'
-import draggable from 'vuedraggable'
 import axios from 'axios'
+ 
+
+
 
 Vue.prototype.$http = axios.create({
   baseURL:'http://localhost:3000'

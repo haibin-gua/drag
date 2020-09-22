@@ -1,6 +1,15 @@
 <template>
 <div>
   <div class="header">
+    <span class="choose" @click="choose">
+      <input type="text" readonly v-model="this.day">
+    </span>
+    <span class="mainBox">
+    <Calendar v-if="isshow" class="today"
+      :textTop="['S','M','T','W','T','F','S']"
+      :sundayStart='true' v-on:choseDay="clickDay">
+    </Calendar>
+  </span>
     <form>
       <div class="input">
         <input type="text" placeholder="请输入待办事项" v-model="noacclist.noacc">
@@ -16,8 +25,8 @@
       </draggable>
     </div>
     <div class="drag-box fr">
-      <h2>完成事项</h2>
-      <draggable class="dd" element="ul" v-model="listdata2" group="{name:'people'}" animation='200' @change="toChange">
+      <h2>完成事项<span class="remove" @click="remove">清除</span></h2>
+      <draggable class="dd" element="ul" v-model="listdata2" group="{name:'people'}" animation='200' @change="toChange" :filter="true">
         <li v-for="item in listdata2" :key="item._id">{{item.acc}}</li>
       </draggable>
     </div>
@@ -42,13 +51,17 @@
  
 <script>
 import draggable from 'vuedraggable'
+import Calendar from 'vue-calendar-component';
 export default {
-  name: 'draggabletest',
+  // name: 'draggabletest',
   components: { 
     draggable,
+    Calendar
   },
   data () {
     return {
+       isshow:false,
+       day:'',
       noacclist:{
         noacc:''
       },
@@ -58,7 +71,10 @@ export default {
   },
   methods:{
     btn(){
-      if(this.noacclist.noacc.length > 0){
+      var regu = "^[ ]+$";
+      var re = new RegExp(regu);
+      console.log(re.test(this.noacclist.noacc))
+      if(this.noacclist.noacc.length > 0 && re.test(this.noacclist.noacc) == false){
         this.$http.post('/add',this.noacclist).then(res=>{
           // console.log(res)
         })
@@ -120,6 +136,26 @@ export default {
       this.listdata2 = res.data
       // console.log(res)
     })
+    },
+    remove(){
+      this.$http.get('/remove').then(res=>{
+        // console.log('ddd')
+      })
+      this.$http.get('/acclist').then(res=>{
+      this.listdata2 = res.data
+      // console.log(res)
+    })
+    },
+    choose(){
+      console.log()
+      if(this.isshow == false){
+        this.isshow = true
+      }else{
+        this.isshow = false
+      }
+    },
+    clickDay(data){
+      this.day = data
     }
 },
   mounted(){
@@ -142,6 +178,7 @@ export default {
     background: pink;
     text-align: right;
     padding-right: 150px;
+    position: relative;
   }
   .header .input{
     width:150px;
@@ -205,6 +242,7 @@ export default {
     font-weight: bold;
     text-align: center;
     background: gray;
+    position: relative;
   }
     .body .dd li{
       border-bottom: 1px solid #333;
@@ -221,5 +259,40 @@ export default {
     }
     img.ok{
       float: right;
+    }
+    .remove{
+      display: inline-block;
+      position: absolute;
+      width:50px;
+      height: 35px;
+      top:3px;
+      right: 30px;
+      border-radius: 20px;
+      line-height: 35px;
+      background: yellow;
+      font-size: 18px;
+      color: #333;
+      cursor: pointer;
+    }
+    .today{
+      position: absolute;
+      z-index: 999;
+      left:20px;
+      top:50px;
+    }
+    .choose{
+      display: block;
+      float: left;
+      width:180px;
+      height: 30px;
+      margin-top:10px;
+      margin-left:50px;
+     
+    }
+    .choose input{
+      width:100%;
+      height: 100%;
+       padding-left:10px;
+       border-radius: 10px;
     }
 </style>
