@@ -6,6 +6,10 @@ const AccSchema = mongoose.Schema({
     acc:{
         type:String,
         require:true
+    },
+    time:{
+        type:String,
+        require:true
     }
 });
 

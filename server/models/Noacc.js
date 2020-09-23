@@ -6,6 +6,10 @@ const NoaccSchema = mongoose.Schema({
     noacc:{
         type:String,
         require:true
+    },
+    time:{
+        type:String,
+        require:true
     }
 });
 

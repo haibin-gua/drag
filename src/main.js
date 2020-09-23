@@ -9,7 +9,6 @@ import axios from 'axios'
  
 
 
-
 Vue.prototype.$http = axios.create({
   baseURL:'http://localhost:3000'
 })

@@ -45,9 +45,10 @@ router.post('/add',async(ctx)=>{
     // const findResult = await Noacc.find({noacc:ctx.request.body.noacc});
     // console.log(findResult);
     const newNoacc = new Noacc({
-        noacc:ctx.request.body.noacc
+        noacc:ctx.request.body.noacc,
+        time:ctx.request.body.time
     });
-    // console.log(newNoacc)
+    console.log(newNoacc)
 
     //存储到数据库
     await newNoacc.save().then(noacc=>{
@@ -78,7 +79,8 @@ router.post('/del',async(ctx)=>{
 
 router.post('/acc',async (ctx)=>{
     const newAcc = new Acc({
-        acc:ctx.request.body.acc
+        acc:ctx.request.body.acc,
+        time:ctx.request.body.time
     });
     // console.log(newAcc)
 
@@ -100,11 +102,14 @@ router.get('/acclist',async(ctx)=>{
 
 router.post('/ok',async(ctx)=>{
     // console.log(ctx.request.body.data)
-    const txt = ctx.request.body.data
+    const txt = ctx.request.body.txt
+    const time = ctx.request.body.time
+    // console.log(ctx.request.body)
     const findResult = await Acc.find({accs:ctx.request.body.acc})
-    console.log(findResult)
+    // console.log(findResult)
     const newAcc = new Acc({
-        acc:txt
+        acc:txt,
+        time:time
     });
     // console.log(newAcc)
 

@@ -52,6 +52,7 @@
 <script>
 import draggable from 'vuedraggable'
 import Calendar from 'vue-calendar-component';
+import dayjs from 'dayjs'
 export default {
   // name: 'draggabletest',
   components: { 
@@ -63,7 +64,8 @@ export default {
        isshow:false,
        day:'',
       noacclist:{
-        noacc:''
+        noacc:'',
+        time:''
       },
       listdata:[],
       listdata2:[]
@@ -71,6 +73,15 @@ export default {
   },
   methods:{
     btn(){
+      var date = dayjs()
+      var year = String(date.$y);
+      var month = String(date.$M+1);
+      var day = String(date.$D);
+      var time = year+'/'+month+'/'+day
+      this.noacclist.time = time
+      // if(data == time){
+      //   console.log('ok')
+      // }
       var regu = "^[ ]+$";
       var re = new RegExp(regu);
       console.log(re.test(this.noacclist.noacc))
@@ -100,8 +111,14 @@ export default {
     ok(){
       var txt = event.path[1].innerText
       var id = event.path[1].id
-      console.log(txt)
-      this.$http.post('/ok',{data:txt}).then(res=>{
+      var date = dayjs()
+      var year = String(date.$y);
+      var month = String(date.$M+1);
+      var day = String(date.$D);
+      var time = year+'/'+month+'/'+day
+      // console.log(time)
+      // console.log(txt)
+      this.$http.post('/ok',{txt:txt,time:time}).then(res=>{
         console.log('ok')
       })
       // console.log(id)
@@ -121,8 +138,9 @@ export default {
       console.log(event)
       var txt = event.added.element.noacc
       var id = event.added.element._id
+      var time = event.added.element.time
       console.log(txt)
-      this.$http.post('/ok',{data:txt}).then(res=>{
+      this.$http.post('/ok',{txt:txt,time:time}).then(res=>{
         console.log('ok')
       })
       this.$http.post('/del',{id:id}).then(res=>{
@@ -148,25 +166,72 @@ export default {
     },
     choose(){
       console.log()
-      if(this.isshow == false){
-        this.isshow = true
-      }else{
-        this.isshow = false
-      }
+      this.isshow = !this.isshow
     },
     clickDay(data){
+      var list = []
+      var list2 = []
       this.day = data
+      this.isshow = !this.isshow
+      this.$http.get('/noacclist').then(res=>{
+        for(var i = 0;i<res.data.length;i++){
+          if(res.data[i].time == data){
+              list.push(res.data[i])
+          }
+          // console.log(list)
+          this.listdata = list
+        }
+    })
+    this.$http.get('/acclist').then(res=>{
+      for(var j = 0;j<res.data.length;j++){
+        if(res.data[j].time == data){
+          list2.push(res.data[j])
+        }
+        // console.log(list2)
+        this.listdata2 = list2
+      }
+      // this.listdata2 = res.data
+      // console.log(res)
+    })
     }
 },
   mounted(){
-    this.$http.get('/noacclist').then(res=>{
-      this.listdata = res.data
-      // console.log(res.data)
-    }),
+    var date = dayjs()
+      var year = String(date.$y);
+      var month = String(date.$M+1);
+      var day = String(date.$D);
+      var time = year+'/'+month+'/'+day
+      this.day = time;
+      var list = [];
+      var list2 = [];
+      this.$http.get('/noacclist').then(res=>{
+        for(var i = 0;i<res.data.length;i++){
+          if(res.data[i].time == time){
+              list.push(res.data[i])
+          }
+          // console.log(list)
+          this.listdata = list
+        }
+    })
     this.$http.get('/acclist').then(res=>{
-      this.listdata2 = res.data
+      for(var j = 0;j<res.data.length;j++){
+        if(res.data[j].time == time){
+          list2.push(res.data[j])
+        }
+        // console.log(list2)
+        this.listdata2 = list2
+      }
+      // this.listdata2 = res.data
       // console.log(res)
     })
+    // this.$http.get('/noacclist').then(res=>{
+    //   this.listdata = res.data
+    //   // console.log(res.data)
+    // }),
+    // this.$http.get('/acclist').then(res=>{
+    //   this.listdata2 = res.data
+    //   // console.log(res)
+    // })
   }
 }
 </script>
