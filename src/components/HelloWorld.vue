@@ -20,33 +20,18 @@
   <div class="body">
     <div class="drag-box fl">
       <h2>待办事项</h2>
-      <draggable class="dd" element="ul" v-model="listdata" group="{name:'people'}" animation='200'>
-        <li v-for="item in listdata" :key="item._id" :id="item._id">{{item.noacc}}<img @click="ok" class="ok" src="../assets/images/完成.svg"/><img @click="del" class="close" src="../assets/images/close.svg"/></li>
+      <draggable chosen-class="chosen" class="dd" element="ul" v-model="listdata" group="{name:'people'}" animation='200'>
+       <li v-for="item in listdata" :key="item._id" :id="item._id">{{item.noacc}}<img @click="ok" class="ok" src="../assets/images/完成.svg"/><img @click="del" class="close" src="../assets/images/close.svg"/></li>
       </draggable>
     </div>
     <div class="drag-box fr">
       <h2>完成事项<span class="remove" @click="remove">清除</span></h2>
-      <draggable class="dd" element="ul" v-model="listdata2" group="{name:'people'}" animation='200' @change="toChange" :filter="true">
-        <li v-for="item in listdata2" :key="item._id">{{item.acc}}</li>
+      <draggable class="dd" element="ul" v-model="listdata2" group="{name:'people'}" animation='200' @change="toChange" filter=".item">
+        <li class="item" v-for="item in listdata2" :key="item._id">{{item.acc}}</li>
       </draggable>
     </div>
-    <!-- <draggable class="dd" element="ul" v-model="listdata" group="people">
-      <h2>代办事项</h2>
-      <li v-for="item in listdata" :key="item.id">{{item.name}}</li>
-    </draggable>   -->
   </div>
 </div>
-  <!-- <div> -->
-    <!-- 调用组件  -->
-    <!-- <draggable class="dd" element="ul" v-model="listdata" group="people">
-      <li v-for="item in listdata" :key="item.id">{{item.name}}</li>
-    </draggable>
-    <draggable element="ul" v-model="listdata2" group="people">
-      <li v-for="item in listdata2" :key="item.id">{{item.name}}</li>
-    </draggable> -->
-    <!-- 展示list数据效果 -->
-    <!-- {{listdata}} -->
-  <!-- </div> -->
 </template>
  
 <script>
@@ -54,7 +39,6 @@ import draggable from 'vuedraggable'
 import Calendar from 'vue-calendar-component';
 import dayjs from 'dayjs'
 export default {
-  // name: 'draggabletest',
   components: { 
     draggable,
     Calendar
@@ -73,39 +57,33 @@ export default {
   },
   methods:{
     btn(){
-      var date = dayjs()
+      var date = dayjs()                  //通过插件dayjs获取当前时间
       var year = String(date.$y);
       var month = String(date.$M+1);
       var day = String(date.$D);
-      var time = year+'/'+month+'/'+day
+      var time = year+'/'+month+'/'+day     //将年月日转为字符串组合到一起
       this.noacclist.time = time
-      // if(data == time){
-      //   console.log('ok')
-      // }
-      var regu = "^[ ]+$";
+      var regu = "^[ ]+$";        //正则，判断空格
       var re = new RegExp(regu);
-      console.log(re.test(this.noacclist.noacc))
       if(this.noacclist.noacc.length > 0 && re.test(this.noacclist.noacc) == false){
         this.$http.post('/add',this.noacclist).then(res=>{
-          // console.log(res)
         })
       }
       this.$http.get('/noacclist').then(res=>{
       this.listdata = res.data
       this.noacclist.noacc = ''
-      // console.log(res.data)
+     
     })
     },
     del(){
-      var id = event.path[1].id
-      // console.log(id)
+      var id = event.path[1].id       //获取待办事项的id传给后端
       this.$http.post('/del',{id:id}).then(res=>{
-        // console.log('ddds')
+        
         
       })
       this.$http.get('/noacclist').then(res=>{
       this.listdata = res.data
-      // console.log(res.data)
+      
     })
     },
     ok(){
@@ -116,69 +94,66 @@ export default {
       var month = String(date.$M+1);
       var day = String(date.$D);
       var time = year+'/'+month+'/'+day
-      // console.log(time)
-      // console.log(txt)
+      
       this.$http.post('/ok',{txt:txt,time:time}).then(res=>{
         console.log('ok')
       })
-      // console.log(id)
+      
       this.$http.post('/del',{id:id}).then(res=>{
-        // console.log('ddds')
+        
       })
       this.$http.get('/noacclist').then(res=>{
       this.listdata = res.data
-      // console.log(res.data)
+      
     })
     this.$http.get('/acclist').then(res=>{
       this.listdata2 = res.data
-      // console.log(res)
+      
     })
     },
-    toChange(event){
+    toChange(event){                //插件draggable提供的拖动完成的方法，拖动完成后获取拖动列表的信息
       console.log(event)
       var txt = event.added.element.noacc
       var id = event.added.element._id
       var time = event.added.element.time
-      console.log(txt)
       this.$http.post('/ok',{txt:txt,time:time}).then(res=>{
-        console.log('ok')
       })
       this.$http.post('/del',{id:id}).then(res=>{
-        // console.log('ddds')
+        
       })
       this.$http.get('/noacclist').then(res=>{
       this.listdata = res.data
-      // console.log(res.data)
+      
     })
     this.$http.get('/acclist').then(res=>{
       this.listdata2 = res.data
-      // console.log(res)
+      
     })
     },
     remove(){
       this.$http.get('/remove').then(res=>{
-        // console.log('ddd')
+        
       })
       this.$http.get('/acclist').then(res=>{
       this.listdata2 = res.data
-      // console.log(res)
+      
     })
     },
-    choose(){
+    choose(){       //对日历进行显示与隐藏
       console.log()
-      this.isshow = !this.isshow
+      this.isshow = !this.isshow    
     },
-    clickDay(data){
+    clickDay(data){         //插件dayjs提供的方法，点击获取当前时间
       var list = []
       var list2 = []
       this.day = data
       this.isshow = !this.isshow
       this.$http.get('/noacclist').then(res=>{
-        for(var i = 0;i<res.data.length;i++){
+        for(var i = 0;i<res.data.length;i++){     //对待办事项的数据进行遍历，符合查询日期的渲染到页面
           if(res.data[i].time == data){
               list.push(res.data[i])
           }
-          // console.log(list)
+         
           this.listdata = list
         }
     })
@@ -187,11 +162,10 @@ export default {
         if(res.data[j].time == data){
           list2.push(res.data[j])
         }
-        // console.log(list2)
+        
         this.listdata2 = list2
       }
-      // this.listdata2 = res.data
-      // console.log(res)
+      
     })
     }
 },
@@ -209,7 +183,7 @@ export default {
           if(res.data[i].time == time){
               list.push(res.data[i])
           }
-          // console.log(list)
+          
           this.listdata = list
         }
     })
@@ -218,20 +192,12 @@ export default {
         if(res.data[j].time == time){
           list2.push(res.data[j])
         }
-        // console.log(list2)
+        
         this.listdata2 = list2
       }
-      // this.listdata2 = res.data
-      // console.log(res)
+      
     })
-    // this.$http.get('/noacclist').then(res=>{
-    //   this.listdata = res.data
-    //   // console.log(res.data)
-    // }),
-    // this.$http.get('/acclist').then(res=>{
-    //   this.listdata2 = res.data
-    //   // console.log(res)
-    // })
+    
   }
 }
 </script>
@@ -314,6 +280,16 @@ export default {
       padding:5px;
       font-size: 18px;
       padding-right: 20px;
+    }
+    .body .dd li:hover{
+      background-color: #f1f1f1;
+      cursor: move;
+    }
+    .chosen {
+            border: solid 2px green !important;
+        }
+    .body .dd:last-child li:hover{
+      cursor: pointer;
     }
     .body .dd li:last-child{
       border-bottom: none;
